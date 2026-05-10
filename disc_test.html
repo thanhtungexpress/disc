@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bài trắc nghiệm tính cách DISC</title>
+<style>
+  /* ---------- Base ---------- */
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    background: #f5f5f0;
+    color: #1f2937;
+    line-height: 1.5;
+  }
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 20px 130px;
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    text-align: center;
+    padding: 24px 16px 18px;
+    border-bottom: 3px solid #C9A227;
+    margin-bottom: 24px;
+  }
+  header h1 {
+    margin: 0 0 6px;
+    font-size: 28px;
+    color: #C9A227;
+    letter-spacing: 1px;
+  }
+  header .subtitle {
+    color: #6b7280;
+    font-style: italic;
+    font-size: 14px;
+  }
+
+  /* ---------- Info form ---------- */
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 16px;
+    margin-bottom: 20px;
+  }
+  .info-grid .field-full { grid-column: 1 / -1; }
+  .field label {
+    display: block;
+    font-weight: 600;
+    font-size: 13px;
+    color: #374151;
+    margin-bottom: 4px;
+  }
+  .field input {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #fff;
+    transition: border-color 0.15s;
+  }
+  .field input:focus {
+    outline: none;
+    border-color: #8B0000;
+    box-shadow: 0 0 0 3px rgba(139, 0, 0, 0.1);
+  }
+
+  /* ---------- Instruction box ---------- */
+  .instruction {
+    background: #fff8e7;
+    border-left: 4px solid #C9A227;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  .instruction strong { color: #8B0000; }
+
+  /* ---------- Table ---------- */
+  .table-wrap {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 24px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+  thead th {
+    padding: 12px 8px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-align: center;
+  }
+  thead th.col-d { background: #DC2626; }
+  thead th.col-i { background: #F59E0B; }
+  thead th.col-s { background: #10B981; }
+  thead th.col-c { background: #3B82F6; }
+  thead th .col-sub {
+    display: block;
+    font-size: 11px;
+    font-weight: 400;
+    opacity: 0.9;
+    margin-top: 2px;
+  }
+  tbody td {
+    padding: 0;
+    border: 1px solid #e5e7eb;
+    width: 25%;
+    vertical-align: middle;
+  }
+  tbody tr:nth-child(even) td { background: #fafaf6; }
+
+  /* Each cell becomes a clickable label */
+  .cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+    user-select: none;
+    min-height: 44px;
+    transition: background 0.12s;
+  }
+  .cell:hover { background: rgba(139, 0, 0, 0.05); }
+  .cell input { display: none; }
+  .check-box {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid #9ca3af;
+    border-radius: 3px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: transparent;
+    background: #fff;
+    transition: all 0.15s;
+  }
+  .cell-text { font-size: 14px; }
+
+  /* Selected state — color matches the column */
+  .cell.selected { font-weight: 600; }
+  td.col-d .cell.selected { background: #fef2f2; }
+  td.col-i .cell.selected { background: #fffbeb; }
+  td.col-s .cell.selected { background: #f0fdf4; }
+  td.col-c .cell.selected { background: #eff6ff; }
+
+  td.col-d .cell.selected .check-box { background: #DC2626; border-color: #DC2626; color: #fff; }
+  td.col-i .cell.selected .check-box { background: #F59E0B; border-color: #F59E0B; color: #fff; }
+  td.col-s .cell.selected .check-box { background: #10B981; border-color: #10B981; color: #fff; }
+  td.col-c .cell.selected .check-box { background: #3B82F6; border-color: #3B82F6; color: #fff; }
+
+  /* Row index hint */
+  .row-num {
+    display: inline-block;
+    width: 22px;
+    color: #9ca3af;
+    font-size: 11px;
+    text-align: right;
+    margin-right: 4px;
+  }
+
+  /* ---------- Results panel (sticky bottom) ---------- */
+  .results {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 2px solid #C9A227;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+    padding: 14px 20px;
+    z-index: 50;
+  }
+  .results-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .scores {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+    min-width: 280px;
+  }
+  .score {
+    flex: 1;
+    text-align: center;
+    padding: 8px 6px;
+    border-radius: 6px;
+    border: 2px solid;
+    background: #fff;
+    transition: transform 0.15s;
+  }
+  .score.is-top { transform: scale(1.06); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+  .score-letter { font-size: 20px; font-weight: 800; line-height: 1; }
+  .score-value { font-size: 22px; font-weight: 700; margin-top: 2px; }
+  .score-name { font-size: 10px; color: #6b7280; margin-top: 2px; }
+  .score.d { border-color: #DC2626; }
+  .score.d .score-letter { color: #DC2626; }
+  .score.i { border-color: #F59E0B; }
+  .score.i .score-letter { color: #F59E0B; }
+  .score.s { border-color: #10B981; }
+  .score.s .score-letter { color: #10B981; }
+  .score.c { border-color: #3B82F6; }
+  .score.c .score-letter { color: #3B82F6; }
+
+  .summary { text-align: center; min-width: 180px; }
+  .summary .progress { font-size: 13px; color: #6b7280; }
+  .summary .progress strong { color: #1f2937; font-size: 15px; }
+  .summary .dominant {
+    font-size: 13px;
+    margin-top: 2px;
+    color: #8B0000;
+    font-weight: 600;
+  }
+
+  .actions { display: flex; gap: 8px; }
+  .btn {
+    padding: 9px 16px;
+    border: 1px solid #d1d5db;
+    background: #fff;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+    color: #374151;
+  }
+  .btn:hover { background: #f9fafb; border-color: #9ca3af; }
+  .btn-primary { background: #8B0000; color: #fff; border-color: #8B0000; }
+  .btn-primary:hover { background: #6b0000; }
+
+  /* ---------- Analysis section ---------- */
+  .analysis {
+    background: #fff;
+    border-radius: 8px;
+    padding: 22px 26px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    display: none;
+  }
+  .analysis.show { display: block; }
+  .analysis h2 {
+    margin: 0 0 8px;
+    font-size: 19px;
+    color: #8B0000;
+    border-bottom: 2px solid #C9A227;
+    padding-bottom: 8px;
+  }
+  .analysis .preview-tag {
+    display: inline-block;
+    background: #fef3c7;
+    color: #92400e;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .analysis h3 {
+    margin: 22px 0 10px;
+    font-size: 15px;
+    color: #1f2937;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .analysis h3 .badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: #f3f4f6;
+    color: #6b7280;
+  }
+
+  /* Type description block */
+  .type-block {
+    background: #fafaf6;
+    border-left: 4px solid #C9A227;
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin-top: 8px;
+  }
+  .type-block + .type-block { margin-top: 10px; }
+  .type-block h4 { margin: 0 0 6px; font-size: 14px; color: #8B0000; }
+  .type-block ul {
+    margin: 4px 0 0;
+    padding-left: 20px;
+    font-size: 13px;
+    color: #4b5563;
+  }
+  .type-block li { margin-bottom: 2px; }
+
+  /* Job match list */
+  .job-list { display: flex; flex-direction: column; gap: 8px; }
+  .job-item {
+    padding: 12px 14px;
+    background: #fafaf6;
+    border-left: 4px solid #cbd5e1;
+    border-radius: 4px;
+  }
+  .job-item.tier-1 { border-left-color: #10B981; background: #f0fdf4; }
+  .job-item.tier-2 { border-left-color: #3B82F6; background: #eff6ff; }
+  .job-item.tier-3 { border-left-color: #C9A227; background: #fff8e7; }
+  .job-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .job-name { font-weight: 600; font-size: 14px; color: #1f2937; }
+  .job-match {
+    font-weight: 700;
+    font-size: 14px;
+    white-space: nowrap;
+    color: #6b7280;
+  }
+  .job-item.tier-1 .job-match { color: #059669; }
+  .job-item.tier-2 .job-match { color: #2563eb; }
+  .job-item.tier-3 .job-match { color: #b45309; }
+  .job-why {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 4px;
+    line-height: 1.45;
+  }
+  .job-bar {
+    height: 5px;
+    background: #e5e7eb;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .job-bar-fill { height: 100%; transition: width 0.4s ease; background: #94a3b8; }
+  .job-item.tier-1 .job-bar-fill { background: linear-gradient(90deg, #10B981, #059669); }
+  .job-item.tier-2 .job-bar-fill { background: linear-gradient(90deg, #3B82F6, #2563eb); }
+  .job-item.tier-3 .job-bar-fill { background: linear-gradient(90deg, #C9A227, #b45309); }
+
+  /* Caution list — red theme */
+  .caution-list .job-item {
+    border-left-color: #f87171;
+    background: #fef2f2;
+  }
+  .caution-list .job-match { color: #dc2626; }
+  .caution-list .job-bar-fill { background: #f87171; }
+
+  .disclaimer {
+    font-size: 12px;
+    color: #9ca3af;
+    font-style: italic;
+    margin-top: 18px;
+    line-height: 1.55;
+    padding-top: 14px;
+    border-top: 1px solid #f3f4f6;
+  }
+
+  /* ---------- Print ---------- */
+  @media print {
+    body { background: #fff; }
+    .container { padding: 12px; padding-bottom: 12px; }
+    .results { position: static; box-shadow: none; padding: 12px 0; border-top: 2px solid #C9A227; }
+    .actions, .no-print { display: none !important; }
+    .cell { cursor: default; }
+    .table-wrap, .analysis { box-shadow: none; }
+    thead th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .score, .cell.selected, td.col-d .cell.selected,
+    td.col-i .cell.selected, td.col-s .cell.selected,
+    td.col-c .cell.selected,
+    .job-item, .type-block, .job-bar-fill {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 700px) {
+    header h1 { font-size: 20px; }
+    .info-grid { grid-template-columns: 1fr; }
+    tbody td { font-size: 12px; }
+    .cell { padding: 8px 8px; gap: 6px; }
+    .cell-text { font-size: 12px; }
+    .results-inner { flex-direction: column; align-items: stretch; }
+    .scores { width: 100%; }
+    .actions { justify-content: center; }
+    .container { padding-bottom: 230px; }
+    .analysis { padding: 16px 18px; }
+    .job-item-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>BÀI TRẮC NGHIỆM TÍNH CÁCH DISC</h1>
+    <div class="subtitle">Victoria Institute</div>
+  </header>
+
+  <!-- Personal info -->
+  <section class="info-grid">
+    <div class="field">
+      <label for="name">Họ và tên</label>
+      <input type="text" id="name" placeholder="Nhập họ và tên..." />
+    </div>
+    <div class="field">
+      <label for="date">Ngày làm bài</label>
+      <input type="date" id="date" />
+    </div>
+    <div class="field field-full">
+      <label for="department">Bộ phận / Phòng ban (không bắt buộc)</label>
+      <input type="text" id="department" placeholder="VD: Phòng Kỹ thuật" />
+    </div>
+  </section>
+
+  <!-- Instruction -->
+  <div class="instruction">
+    <strong>Hướng dẫn:</strong> Trong mỗi hàng ngang, chọn và đánh dấu
+    <strong>MỘT</strong> trong 4 từ mô tả đúng nhất tính cách của bạn khi làm việc.
+    Mỗi ô được tích sẽ tính 1 điểm, kết quả được cộng riêng theo từng cột (D – I – S – C).
+  </div>
+
+  <!-- Test table -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-d">D <span class="col-sub">Thủ lĩnh / Quyết đoán</span></th>
+          <th class="col-i">I <span class="col-sub">Ảnh hưởng / Tương tác</span></th>
+          <th class="col-s">S <span class="col-sub">Kiên định / Ổn định</span></th>
+          <th class="col-c">C <span class="col-sub">Tuân thủ / Cẩn trọng</span></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"><!-- rendered by JS --></tbody>
+    </table>
+  </div>
+
+  <!-- Analysis section: type description + job recommendations -->
+  <section class="analysis" id="analysis">
+    <h2>📊 Phân tích kết quả <span class="preview-tag" id="previewTag" style="display:none;">Tạm thời</span></h2>
+
+    <h3>🧬 Nhóm tính cách nổi bật</h3>
+    <div id="typeContent"></div>
+
+    <h3>🎯 Vị trí công việc phù hợp <span class="badge">Top 5</span></h3>
+    <div class="job-list" id="jobList"></div>
+
+    <h3>⚠️ Vị trí cần cân nhắc / dễ căng thẳng</h3>
+    <div class="job-list caution-list" id="cautionList"></div>
+
+    <p class="disclaimer">
+      <strong>Lưu ý:</strong> Kết quả DISC chỉ phản ánh xu hướng hành vi tự nhiên, không phải năng lực hay giới hạn của bạn.
+      Nhiều người vẫn làm rất tốt ở những vị trí "không tự nhiên" với mình thông qua rèn luyện kỹ năng và kinh nghiệm —
+      chỉ là họ phải nỗ lực nhiều hơn so với người có DISC phù hợp sẵn. Hãy xem đây là gợi ý tham khảo,
+      kết hợp thêm với chuyên môn, sở thích và mục tiêu nghề nghiệp của chính bạn.
+    </p>
+  </section>
+
+</div>
+
+<!-- Sticky results bar -->
+<div class="results">
+  <div class="results-inner">
+    <div class="scores">
+      <div class="score d" id="card-d">
+        <div class="score-letter">D</div>
+        <div class="score-value" id="score-d">0</div>
+        <div class="score-name">Dominance</div>
+      </div>
+      <div class="score i" id="card-i">
+        <div class="score-letter">I</div>
+        <div class="score-value" id="score-i">0</div>
+        <div class="score-name">Influence</div>
+      </div>
+      <div class="score s" id="card-s">
+        <div class="score-letter">S</div>
+        <div class="score-value" id="score-s">0</div>
+        <div class="score-name">Steadiness</div>
+      </div>
+      <div class="score c" id="card-c">
+        <div class="score-letter">C</div>
+        <div class="score-value" id="score-c">0</div>
+        <div class="score-name">Compliance</div>
+      </div>
+    </div>
+
+    <div class="summary">
+      <div class="progress">Đã chọn <strong id="selectedCount">0</strong> / 28 hàng</div>
+      <div class="dominant" id="dominant">&nbsp;</div>
+    </div>
+
+    <div class="actions no-print">
+      <button class="btn" onclick="resetForm()">Làm lại</button>
+      <button class="btn btn-primary" onclick="window.print()">In / Lưu PDF</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ----- Data: 28 rows × 4 columns from the original DISC sheet -----
+  const ROWS = [
+    ["Táo bạo", "Nhiệt tình", "Thỏa mãn", "Ngoại giao"],
+    ["Kiên quyết", "Có sức thuyết phục", "Bản chất tốt", "Cẩn trọng"],
+    ["Trực tính", "Thân thiện", "Điềm tĩnh", "Chính xác"],
+    ["Dứt khoát", "Ba hoa", "Theo tập quán", "Dè dặt"],
+    ["Liều lĩnh", "Thân mật, thoải mái", "Không cực đoan", "Sâu sắc"],
+    ["Sáng tạo", "Có tài thuyết phục", "Hòa nhã", "Nhún nhường"],
+    ["Chỉ huy", "Diễn cảm", "Dễ phản ứng lại", "Cẩn thận"],
+    ["Nóng vội", "Thanh lịch", "Khiêm tốn", "Tinh ý"],
+    ["Khăng khăng", "Có sức hấp dẫn mạnh", "Sẵn sàng đồng ý", "Khéo xử"],
+    ["Dũng cảm", "Truyền cảm hứng", "Dễ phục tùng", "Nhút nhát"],
+    ["Ý chí mạnh mẽ", "Tươi cười", "Sốt sắng", "Kín đáo"],
+    ["Độc lập", "Khuyến khích", "Tử tế", "Nhận thức được"],
+    ["Cạnh tranh", "Hân hoan", "Chu đáo", "Cách biệt riêng tư"],
+    ["Vững vàng", "Hay khôi hài", "Tử tế", "Hay quan trọng hóa"],
+    ["Ngoan cố", "Thu hút", "Sốt sắng", "Chín chắn"],
+    ["Trơ tráo", "Duyên dáng", "Biết nghe lời", "Hợp lý"],
+    ["Tự tin", "Thích kết bạn", "Có thể dự đoán", "Nói nhẹ nhàng"],
+    ["Hăm hở", "Rất linh hoạt", "Trung thành", "Kỹ lưỡng"],
+    ["Năng nổ", "Cởi mở", "Nhẫn nại", "Sợ hãi"],
+    ["Quyết đoán", "Tự tin", "Hay giúp đỡ", "Công bằng"],
+    ["Cố chấp", "Sôi nổi", "Hòa nhã", "Có kỷ luật"],
+    ["Mạnh mẽ", "Bốc đồng", "Thông cảm", "Hướng vào nội tâm"],
+    ["Cường tráng", "Giao thiệp giỏi", "Rộng lượng", "Tế nhị"],
+    ["Đòi hỏi", "Quyến rũ", "Ung dung", "Phục tùng mệnh lệnh"],
+    ["Thích tranh cãi", "Vô tư lự", "Nhân hậu", "Có hệ thống"],
+    ["Thẳng thắn", "Vui tính", "Thỏa mãn", "Nghiêm ngặt"],
+    ["Bồn chồn", "Lôi cuốn", "Sẵn sàng công tác", "Cẩn thận"],
+    ["Tiên phong", "Lạc quan", "Điềm đạm", "Tôn trọng"],
+  ];
+
+  const COLS = ["d", "i", "s", "c"];
+
+  // Personality descriptions for each DISC type (Vietnamese)
+  const TYPE_DESC = {
+    d: {
+      title: "D – Người Thủ lĩnh (Dominance)",
+      points: [
+        "Quyết đoán, mạnh mẽ, thích thách thức và kết quả nhanh",
+        "Định hướng theo mục tiêu, dám chịu trách nhiệm và đưa ra quyết định",
+        "Cần lưu ý: có thể quá thẳng, ít kiên nhẫn với chi tiết và quy trình",
+      ],
+    },
+    i: {
+      title: "I – Người Ảnh hưởng (Influence)",
+      points: [
+        "Cởi mở, lạc quan, giỏi giao tiếp và truyền cảm hứng",
+        "Thích làm việc nhóm, tạo không khí tích cực, kết nối nhanh với người mới",
+        "Cần lưu ý: dễ mất tập trung, đôi khi nói nhiều hơn làm, ngại chi tiết",
+      ],
+    },
+    s: {
+      title: "S – Người Kiên định (Steadiness)",
+      points: [
+        "Điềm tĩnh, kiên nhẫn, biết lắng nghe và hỗ trợ người khác",
+        "Trung thành, đáng tin cậy, làm việc bền bỉ và có trách nhiệm",
+        "Cần lưu ý: ngại thay đổi đột ngột, đôi khi né tránh xung đột trực tiếp",
+      ],
+    },
+    c: {
+      title: "C – Người Tuân thủ (Compliance)",
+      points: [
+        "Cẩn trọng, chính xác, làm việc có hệ thống và quy trình rõ ràng",
+        "Coi trọng chất lượng, dữ liệu, tiêu chuẩn và sự đúng đắn",
+        "Cần lưu ý: có thể cầu toàn, chậm khi cần quyết định nhanh dưới áp lực",
+      ],
+    },
+  };
+
+  // ----- Job profiles -----
+  // Each profile is an "ideal" DISC distribution as percentages summing to 100.
+  // Match score = 100 - (sum of |userPct - idealPct|) / 2  → range 0–100%.
+  const JOBS = [
+    {
+      name: "Trưởng nhóm Phát triển (Tech Lead / Dev Lead)",
+      profile: { d: 30, i: 15, s: 20, c: 35 },
+      why: "Vừa quyết đoán dẫn dắt nhóm, vừa có tư duy logic sâu về kỹ thuật và chất lượng code.",
+    },
+    {
+      name: "Lập trình viên (Developer / Software Engineer)",
+      profile: { d: 10, i: 15, s: 30, c: 45 },
+      why: "Đòi hỏi tập trung sâu, làm việc có hệ thống, kiên nhẫn xử lý lỗi và chi tiết.",
+    },
+    {
+      name: "IT Support / Helpdesk",
+      profile: { d: 10, i: 25, s: 40, c: 25 },
+      why: "Phục vụ người dùng kiên nhẫn, giao tiếp dễ chịu, xử lý sự cố theo quy trình lặp lại.",
+    },
+    {
+      name: "Trưởng nhóm Kỹ thuật / Hỗ trợ (KT / Support Lead)",
+      profile: { d: 25, i: 25, s: 30, c: 20 },
+      why: "Điều phối nhóm hỗ trợ, vừa quyết đoán xử lý sự cố vừa giữ ổn định với khách hàng.",
+    },
+    {
+      name: "QA / Tester",
+      profile: { d: 10, i: 10, s: 30, c: 50 },
+      why: "Tỉ mỉ, kiên nhẫn, làm việc có quy trình, chú ý từng chi tiết bất thường.",
+    },
+    {
+      name: "Phân tích Nghiệp vụ (Business Analyst)",
+      profile: { d: 15, i: 20, s: 25, c: 40 },
+      why: "Tư duy hệ thống, lắng nghe yêu cầu nghiệp vụ, phân tích logic và viết tài liệu.",
+    },
+    {
+      name: "Quản lý Dự án (Project Manager)",
+      profile: { d: 30, i: 25, s: 20, c: 25 },
+      why: "Điều phối nhiều bên, lên kế hoạch chi tiết, ra quyết định nhanh khi có rủi ro.",
+    },
+    {
+      name: "Trưởng phòng / Giám đốc Điều hành",
+      profile: { d: 40, i: 25, s: 15, c: 20 },
+      why: "Quyết đoán, định hướng tầm nhìn, dám chịu trách nhiệm với kết quả lớn.",
+    },
+    {
+      name: "Sales / Kinh doanh / Phát triển Thị trường",
+      profile: { d: 35, i: 40, s: 15, c: 10 },
+      why: "Năng lượng cao, giao tiếp lôi cuốn, dám đề xuất, theo đuổi và chốt deal.",
+    },
+    {
+      name: "Marketing / Truyền thông / Sáng tạo Nội dung",
+      profile: { d: 20, i: 45, s: 15, c: 20 },
+      why: "Sáng tạo, lôi cuốn, hiểu tâm lý người dùng, kể chuyện và xây dựng hình ảnh.",
+    },
+    {
+      name: "Account Manager / Customer Success",
+      profile: { d: 15, i: 35, s: 35, c: 15 },
+      why: "Xây dựng quan hệ lâu dài, lắng nghe và đồng hành cùng khách hàng qua nhiều năm.",
+    },
+    {
+      name: "Nhân sự (HR) – Tuyển dụng / Đào tạo",
+      profile: { d: 20, i: 40, s: 25, c: 15 },
+      why: "Giao tiếp thuyết phục, đánh giá và kết nối con người, truyền cảm hứng học tập.",
+    },
+    {
+      name: "Nhân sự (HR) – Hành chính / Quan hệ Lao động",
+      profile: { d: 15, i: 25, s: 40, c: 20 },
+      why: "Lắng nghe, công bằng, xử lý quan hệ con người ổn định, giữ kỷ luật mềm.",
+    },
+    {
+      name: "Kế toán / Phân tích Tài chính",
+      profile: { d: 10, i: 10, s: 30, c: 50 },
+      why: "Chính xác cao, làm việc với số liệu, tuân thủ chuẩn mực và quy định.",
+    },
+    {
+      name: "Tư vấn / Coach / Cố vấn Khách hàng",
+      profile: { d: 15, i: 30, s: 35, c: 20 },
+      why: "Lắng nghe sâu, đặt câu hỏi tốt, đồng hành với người được tư vấn qua quá trình thay đổi.",
+    },
+    {
+      name: "Quản lý Vận hành / Operations",
+      profile: { d: 30, i: 15, s: 30, c: 25 },
+      why: "Điều phối hoạt động hằng ngày, vừa quyết đoán vừa duy trì sự ổn định nhịp việc.",
+    },
+  ];
+
+  // ----- Render the table rows -----
+  const tbody = document.getElementById("tbody");
+  ROWS.forEach((row, rowIdx) => {
+    const tr = document.createElement("tr");
+    row.forEach((word, colIdx) => {
+      const td = document.createElement("td");
+      td.className = "col-" + COLS[colIdx];
+
+      const label = document.createElement("label");
+      label.className = "cell";
+
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.name = "row-" + rowIdx;
+      input.value = COLS[colIdx];
+      input.dataset.row = rowIdx;
+      input.addEventListener("change", onChange);
+
+      const box = document.createElement("span");
+      box.className = "check-box";
+      box.textContent = "✓";
+
+      const text = document.createElement("span");
+      text.className = "cell-text";
+      // Add row number on the first column for readability
+      if (colIdx === 0) {
+        const num = document.createElement("span");
+        num.className = "row-num";
+        num.textContent = (rowIdx + 1) + ".";
+        text.appendChild(num);
+      }
+      text.appendChild(document.createTextNode(word));
+
+      label.appendChild(input);
+      label.appendChild(box);
+      label.appendChild(text);
+      td.appendChild(label);
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+
+  // ----- Handle a selection change -----
+  function onChange(e) {
+    const rowIdx = e.target.dataset.row;
+    document.querySelectorAll('input[name="row-' + rowIdx + '"]').forEach((inp) => {
+      inp.closest(".cell").classList.toggle("selected", inp.checked);
+    });
+    recalc();
+    saveState();
+  }
+
+  // ----- Compute job match scores given current DISC counts -----
+  function computeJobMatches(counts) {
+    const total = counts.d + counts.i + counts.s + counts.c;
+    if (total === 0) return [];
+    const userPct = {
+      d: (counts.d / total) * 100,
+      i: (counts.i / total) * 100,
+      s: (counts.s / total) * 100,
+      c: (counts.c / total) * 100,
+    };
+    return JOBS.map((job) => {
+      const diff =
+        Math.abs(userPct.d - job.profile.d) +
+        Math.abs(userPct.i - job.profile.i) +
+        Math.abs(userPct.s - job.profile.s) +
+        Math.abs(userPct.c - job.profile.c);
+      const match = Math.max(0, Math.round(100 - diff / 2));
+      return Object.assign({}, job, { match: match });
+    }).sort((a, b) => b.match - a.match);
+  }
+
+  // ----- Tier classification by match % -----
+  function tierClass(match) {
+    if (match >= 85) return "tier-1";
+    if (match >= 70) return "tier-2";
+    if (match >= 55) return "tier-3";
+    return "";
+  }
+
+  function tierLabel(match) {
+    if (match >= 85) return "🌟 Rất phù hợp";
+    if (match >= 70) return "✓ Phù hợp";
+    if (match >= 55) return "○ Tạm phù hợp";
+    return "△ Ít phù hợp";
+  }
+
+  // ----- Render a job item card -----
+  function renderJobItem(job, isCaution) {
+    const cls = isCaution ? "" : tierClass(job.match);
+    return (
+      '<div class="job-item ' + cls + '">' +
+        '<div class="job-item-row">' +
+          '<div class="job-name">' + escapeHtml(job.name) + '</div>' +
+          '<div class="job-match">' + job.match + '% — ' + tierLabel(job.match) + '</div>' +
+        '</div>' +
+        '<div class="job-why">' + escapeHtml(job.why) + '</div>' +
+        '<div class="job-bar"><div class="job-bar-fill" style="width:' + job.match + '%"></div></div>' +
+      '</div>'
+    );
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  // ----- Recalculate scores and refresh the analysis section -----
+  function recalc() {
+    const counts = { d: 0, i: 0, s: 0, c: 0 };
+    let selected = 0;
+    document.querySelectorAll('input[type="radio"]:checked').forEach((inp) => {
+      counts[inp.value]++;
+      selected++;
+    });
+
+    COLS.forEach((c) => {
+      document.getElementById("score-" + c).textContent = counts[c];
+    });
+    document.getElementById("selectedCount").textContent = selected;
+
+    // Find the highest score(s)
+    const max = Math.max(counts.d, counts.i, counts.s, counts.c);
+    const winners = COLS.filter((c) => counts[c] === max && max > 0);
+
+    // Highlight the leading score card(s)
+    COLS.forEach((c) => {
+      document.getElementById("card-" + c)
+        .classList.toggle("is-top", winners.includes(c) && max > 0);
+    });
+
+    const dominantEl = document.getElementById("dominant");
+    const analysisEl = document.getElementById("analysis");
+    const previewTag = document.getElementById("previewTag");
+    const typeContent = document.getElementById("typeContent");
+    const jobList = document.getElementById("jobList");
+    const cautionList = document.getElementById("cautionList");
+
+    if (selected === 0) {
+      dominantEl.innerHTML = "&nbsp;";
+      analysisEl.classList.remove("show");
+      return;
+    }
+
+    // Top dominant text in the sticky bar
+    const upper = winners.map((w) => w.toUpperCase()).join(" / ");
+    if (selected === 28) {
+      dominantEl.textContent = "Nhóm tính cách nổi bật: " + upper;
+      previewTag.style.display = "none";
+    } else {
+      dominantEl.textContent = "Đang dẫn đầu: " + upper +
+        " (còn " + (28 - selected) + " hàng chưa chọn)";
+      previewTag.style.display = "inline-block";
+    }
+
+    // Show the analysis section
+    analysisEl.classList.add("show");
+
+    // Render type description for the leading type(s)
+    typeContent.innerHTML = winners.map((w) => {
+      const t = TYPE_DESC[w];
+      return (
+        '<div class="type-block">' +
+          '<h4>' + escapeHtml(t.title) + '</h4>' +
+          '<ul>' + t.points.map((p) => '<li>' + escapeHtml(p) + '</li>').join('') + '</ul>' +
+        '</div>'
+      );
+    }).join('');
+
+    // Render job match list — top 5 best fits, plus 2 cautions (worst matches)
+    const matches = computeJobMatches(counts);
+    const top5 = matches.slice(0, 5);
+    const cautions = matches.slice(-2).reverse();
+
+    jobList.innerHTML = top5.map((j) => renderJobItem(j, false)).join('');
+    cautionList.innerHTML = cautions.map((j) => renderJobItem(j, true)).join('');
+  }
+
+  // ----- Reset everything -----
+  function resetForm() {
+    if (!confirm("Xoá toàn bộ lựa chọn và làm lại từ đầu?")) return;
+    document.querySelectorAll('input[type="radio"]').forEach((inp) => {
+      inp.checked = false;
+      inp.closest(".cell").classList.remove("selected");
+    });
+    recalc();
+    saveState();
+  }
+  window.resetForm = resetForm;
+
+  // ----- Persist progress in localStorage -----
+  const STORAGE_KEY = "disc_test_state_v1";
+
+  function saveState() {
+    const state = {
+      name: document.getElementById("name").value,
+      date: document.getElementById("date").value,
+      department: document.getElementById("department").value,
+      answers: {},
+    };
+    document.querySelectorAll('input[type="radio"]:checked').forEach((inp) => {
+      state.answers[inp.dataset.row] = inp.value;
+    });
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (_) {}
+  }
+
+  function loadState() {
+    let state = null;
+    try { state = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch (_) {}
+    if (!state) return;
+    if (state.name) document.getElementById("name").value = state.name;
+    if (state.date) document.getElementById("date").value = state.date;
+    if (state.department) document.getElementById("department").value = state.department;
+    if (state.answers) {
+      Object.entries(state.answers).forEach(([rowIdx, col]) => {
+        const inp = document.querySelector(
+          'input[name="row-' + rowIdx + '"][value="' + col + '"]'
+        );
+        if (inp) {
+          inp.checked = true;
+          inp.closest(".cell").classList.add("selected");
+        }
+      });
+    }
+  }
+
+  // Wire up info field listeners for persistence
+  ["name", "date", "department"].forEach((id) => {
+    document.getElementById(id).addEventListener("input", saveState);
+  });
+
+  // ----- Init -----
+  loadState();
+
+  // Default the date input to today if empty
+  (function ensureDate() {
+    const el = document.getElementById("date");
+    if (!el.value) {
+      const d = new Date();
+      el.value = d.getFullYear() + "-" +
+        String(d.getMonth() + 1).padStart(2, "0") + "-" +
+        String(d.getDate()).padStart(2, "0");
+    }
+  })();
+
+  recalc();
+</script>
+
+</body>
+</html>
