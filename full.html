@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bài trắc nghiệm tính cách DISC</title>
+<style>
+  /* ---------- Base ---------- */
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    background: #f5f5f0;
+    color: #1f2937;
+    line-height: 1.5;
+  }
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 20px 130px;
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    text-align: center;
+    padding: 24px 16px 18px;
+    border-bottom: 3px solid #C9A227;
+    margin-bottom: 24px;
+  }
+  header h1 {
+    margin: 0 0 6px;
+    font-size: 28px;
+    color: #C9A227;
+    letter-spacing: 1px;
+  }
+  header .subtitle {
+    color: #6b7280;
+    font-style: italic;
+    font-size: 14px;
+  }
+
+  /* ---------- Info form ---------- */
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 16px;
+    margin-bottom: 20px;
+  }
+  .info-grid .field-full { grid-column: 1 / -1; }
+  .field label {
+    display: block;
+    font-weight: 600;
+    font-size: 13px;
+    color: #374151;
+    margin-bottom: 4px;
+  }
+  .field input {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #fff;
+    transition: border-color 0.15s;
+  }
+  .field input:focus {
+    outline: none;
+    border-color: #8B0000;
+    box-shadow: 0 0 0 3px rgba(139, 0, 0, 0.1);
+  }
+
+  /* ---------- Instruction box ---------- */
+  .instruction {
+    background: #fff8e7;
+    border-left: 4px solid #C9A227;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  .instruction strong { color: #8B0000; }
+
+  /* ---------- Table ---------- */
+  .table-wrap {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 24px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+  thead th {
+    padding: 12px 8px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-align: center;
+  }
+  thead th.col-d { background: #DC2626; }
+  thead th.col-i { background: #F59E0B; }
+  thead th.col-s { background: #10B981; }
+  thead th.col-c { background: #3B82F6; }
+  thead th .col-sub {
+    display: block;
+    font-size: 11px;
+    font-weight: 400;
+    opacity: 0.9;
+    margin-top: 2px;
+  }
+  tbody td {
+    padding: 0;
+    border: 1px solid #e5e7eb;
+    width: 25%;
+    vertical-align: middle;
+  }
+  tbody tr:nth-child(even) td { background: #fafaf6; }
+
+  .cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+    user-select: none;
+    min-height: 44px;
+    transition: background 0.12s;
+  }
+  .cell:hover { background: rgba(139, 0, 0, 0.05); }
+  .cell input { display: none; }
+  .check-box {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid #9ca3af;
+    border-radius: 3px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: transparent;
+    background: #fff;
+    transition: all 0.15s;
+  }
+  .cell-text { font-size: 14px; }
+
+  .cell.selected { font-weight: 600; }
+  td.col-d .cell.selected { background: #fef2f2; }
+  td.col-i .cell.selected { background: #fffbeb; }
+  td.col-s .cell.selected { background: #f0fdf4; }
+  td.col-c .cell.selected { background: #eff6ff; }
+
+  td.col-d .cell.selected .check-box { background: #DC2626; border-color: #DC2626; color: #fff; }
+  td.col-i .cell.selected .check-box { background: #F59E0B; border-color: #F59E0B; color: #fff; }
+  td.col-s .cell.selected .check-box { background: #10B981; border-color: #10B981; color: #fff; }
+  td.col-c .cell.selected .check-box { background: #3B82F6; border-color: #3B82F6; color: #fff; }
+
+  .row-num {
+    display: inline-block;
+    width: 22px;
+    color: #9ca3af;
+    font-size: 11px;
+    text-align: right;
+    margin-right: 4px;
+  }
+
+  /* ---------- Sticky results bar ---------- */
+  .results {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 2px solid #C9A227;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+    padding: 14px 20px;
+    z-index: 50;
+  }
+  .results-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .scores { display: flex; gap: 10px; flex: 1; min-width: 280px; }
+  .score {
+    flex: 1;
+    text-align: center;
+    padding: 8px 6px;
+    border-radius: 6px;
+    border: 2px solid;
+    background: #fff;
+    transition: transform 0.15s;
+  }
+  .score.is-top { transform: scale(1.06); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+  .score-letter { font-size: 20px; font-weight: 800; line-height: 1; }
+  .score-value { font-size: 22px; font-weight: 700; margin-top: 2px; }
+  .score-name { font-size: 10px; color: #6b7280; margin-top: 2px; }
+  .score.d { border-color: #DC2626; }  .score.d .score-letter { color: #DC2626; }
+  .score.i { border-color: #F59E0B; }  .score.i .score-letter { color: #F59E0B; }
+  .score.s { border-color: #10B981; }  .score.s .score-letter { color: #10B981; }
+  .score.c { border-color: #3B82F6; }  .score.c .score-letter { color: #3B82F6; }
+
+  .summary { text-align: center; min-width: 180px; }
+  .summary .progress { font-size: 13px; color: #6b7280; }
+  .summary .progress strong { color: #1f2937; font-size: 15px; }
+  .summary .dominant {
+    font-size: 13px;
+    margin-top: 2px;
+    color: #8B0000;
+    font-weight: 600;
+  }
+
+  .actions { display: flex; gap: 8px; }
+  .btn {
+    padding: 9px 16px;
+    border: 1px solid #d1d5db;
+    background: #fff;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+    color: #374151;
+  }
+  .btn:hover { background: #f9fafb; border-color: #9ca3af; }
+  .btn-primary { background: #8B0000; color: #fff; border-color: #8B0000; }
+  .btn-primary:hover { background: #6b0000; }
+
+  /* ---------- Analysis section ---------- */
+  .analysis {
+    background: #fff;
+    border-radius: 8px;
+    padding: 22px 26px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    display: none;
+  }
+  .analysis.show { display: block; }
+  .analysis h2 {
+    margin: 0 0 8px;
+    font-size: 19px;
+    color: #8B0000;
+    border-bottom: 2px solid #C9A227;
+    padding-bottom: 8px;
+  }
+  .analysis .preview-tag {
+    display: inline-block;
+    background: #fef3c7;
+    color: #92400e;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .analysis h3 {
+    margin: 22px 0 10px;
+    font-size: 15px;
+    color: #1f2937;
+  }
+
+  /* Type description block */
+  .type-block {
+    background: #fafaf6;
+    border-left: 4px solid #C9A227;
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin-top: 8px;
+  }
+  .type-block + .type-block { margin-top: 10px; }
+  .type-block h4 { margin: 0 0 6px; font-size: 14px; color: #8B0000; }
+  .type-block ul {
+    margin: 4px 0 0;
+    padding-left: 20px;
+    font-size: 13px;
+    color: #4b5563;
+  }
+  .type-block li { margin-bottom: 2px; }
+
+  /* ---------- Tabs ---------- */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 2px solid #e5e7eb;
+    margin-top: 24px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .tab {
+    padding: 9px 16px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.15s;
+  }
+  .tab:hover { color: #8B0000; }
+  .tab.active {
+    color: #8B0000;
+    border-bottom-color: #C9A227;
+    background: #fff8e7;
+  }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Job match list */
+  .job-list { display: flex; flex-direction: column; gap: 8px; }
+  .job-item {
+    padding: 12px 14px;
+    background: #fafaf6;
+    border-left: 4px solid #cbd5e1;
+    border-radius: 4px;
+  }
+  .job-item.tier-1 { border-left-color: #10B981; background: #f0fdf4; }
+  .job-item.tier-2 { border-left-color: #3B82F6; background: #eff6ff; }
+  .job-item.tier-3 { border-left-color: #C9A227; background: #fff8e7; }
+  .job-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .job-name { font-weight: 600; font-size: 14px; color: #1f2937; }
+  .job-match {
+    font-weight: 700;
+    font-size: 14px;
+    white-space: nowrap;
+    color: #6b7280;
+  }
+  .job-item.tier-1 .job-match { color: #059669; }
+  .job-item.tier-2 .job-match { color: #2563eb; }
+  .job-item.tier-3 .job-match { color: #b45309; }
+  .job-why {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 4px;
+    line-height: 1.45;
+  }
+  .job-bar {
+    height: 5px;
+    background: #e5e7eb;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .job-bar-fill { height: 100%; transition: width 0.4s ease; background: #94a3b8; }
+  .job-item.tier-1 .job-bar-fill { background: linear-gradient(90deg, #10B981, #059669); }
+  .job-item.tier-2 .job-bar-fill { background: linear-gradient(90deg, #3B82F6, #2563eb); }
+  .job-item.tier-3 .job-bar-fill { background: linear-gradient(90deg, #C9A227, #b45309); }
+
+  /* Caution list — red theme */
+  .caution-list { margin-top: 18px; }
+  .caution-list-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #dc2626;
+    margin-bottom: 10px;
+  }
+  .caution-list .job-item {
+    border-left-color: #f87171;
+    background: #fef2f2;
+  }
+  .caution-list .job-match { color: #dc2626; }
+  .caution-list .job-bar-fill { background: #f87171; }
+
+  /* ---------- Category groups ---------- */
+  .cat-group { margin-bottom: 18px; }
+  .cat-group:last-child { margin-bottom: 0; }
+  .cat-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: linear-gradient(90deg, #fff8e7, transparent);
+    border-left: 3px solid #C9A227;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+  .cat-icon { font-size: 18px; }
+  .cat-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: #8B0000;
+    flex: 1;
+  }
+  .cat-count {
+    font-size: 11px;
+    color: #9ca3af;
+    font-weight: 500;
+  }
+  .cat-more {
+    font-size: 12px;
+    color: #6b7280;
+    font-style: italic;
+    text-align: center;
+    padding: 6px;
+  }
+
+  /* Compact item for "By category" view */
+  .job-item.compact { padding: 8px 12px; }
+  .job-item.compact .job-why { display: none; }
+  .job-item.compact .job-bar { margin-top: 5px; height: 4px; }
+
+  .disclaimer {
+    font-size: 12px;
+    color: #9ca3af;
+    font-style: italic;
+    margin-top: 18px;
+    line-height: 1.55;
+    padding-top: 14px;
+    border-top: 1px solid #f3f4f6;
+  }
+
+  /* ---------- Print ---------- */
+  @media print {
+    body { background: #fff; }
+    .container { padding: 12px; padding-bottom: 12px; }
+    .results { position: static; box-shadow: none; padding: 12px 0; border-top: 2px solid #C9A227; }
+    .actions, .no-print { display: none !important; }
+    .cell { cursor: default; }
+    .table-wrap, .analysis { box-shadow: none; }
+    /* Show all tab panels when printing */
+    .tabs { display: none; }
+    .tab-panel { display: block !important; page-break-before: auto; }
+    .tab-panel + .tab-panel { margin-top: 20px; padding-top: 16px; border-top: 1px solid #e5e7eb; }
+    .tab-panel::before {
+      content: attr(data-print-title);
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      color: #8B0000;
+      margin-bottom: 10px;
+    }
+    thead th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .score, .cell.selected, td.col-d .cell.selected,
+    td.col-i .cell.selected, td.col-s .cell.selected,
+    td.col-c .cell.selected,
+    .job-item, .type-block, .job-bar-fill, .cat-header {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 700px) {
+    header h1 { font-size: 20px; }
+    .info-grid { grid-template-columns: 1fr; }
+    tbody td { font-size: 12px; }
+    .cell { padding: 8px 8px; gap: 6px; }
+    .cell-text { font-size: 12px; }
+    .results-inner { flex-direction: column; align-items: stretch; }
+    .scores { width: 100%; }
+    .actions { justify-content: center; }
+    .container { padding-bottom: 230px; }
+    .analysis { padding: 16px 18px; }
+    .job-item-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .tab { padding: 8px 10px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>BÀI TRẮC NGHIỆM TÍNH CÁCH DISC</h1>
+    <div class="subtitle">Victoria Institute</div>
+  </header>
+
+  <section class="info-grid">
+    <div class="field">
+      <label for="name">Họ và tên</label>
+      <input type="text" id="name" placeholder="Nhập họ và tên..." />
+    </div>
+    <div class="field">
+      <label for="date">Ngày làm bài</label>
+      <input type="date" id="date" />
+    </div>
+    <div class="field field-full">
+      <label for="department">Bộ phận / Phòng ban (không bắt buộc)</label>
+      <input type="text" id="department" placeholder="VD: Phòng Kỹ thuật" />
+    </div>
+  </section>
+
+  <div class="instruction">
+    <strong>Hướng dẫn:</strong> Trong mỗi hàng ngang, chọn và đánh dấu
+    <strong>MỘT</strong> trong 4 từ mô tả đúng nhất tính cách của bạn khi làm việc.
+    Mỗi ô được tích sẽ tính 1 điểm, kết quả được cộng riêng theo từng cột (D – I – S – C).
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-d">D <span class="col-sub">Thủ lĩnh / Quyết đoán</span></th>
+          <th class="col-i">I <span class="col-sub">Ảnh hưởng / Tương tác</span></th>
+          <th class="col-s">S <span class="col-sub">Kiên định / Ổn định</span></th>
+          <th class="col-c">C <span class="col-sub">Tuân thủ / Cẩn trọng</span></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <section class="analysis" id="analysis">
+    <h2>📊 Phân tích kết quả <span class="preview-tag" id="previewTag" style="display:none;">Tạm thời</span></h2>
+
+    <h3>🧬 Nhóm tính cách nổi bật</h3>
+    <div id="typeContent"></div>
+
+    <h3>🎯 Vị trí công việc phù hợp</h3>
+
+    <!-- Tab navigation -->
+    <div class="tabs no-print">
+      <button class="tab active" data-tab="top5" onclick="switchTab('top5')">⭐ Top 5</button>
+      <button class="tab" data-tab="bycat" onclick="switchTab('bycat')">🗂️ Theo nhóm ngành</button>
+      <button class="tab" data-tab="all" onclick="switchTab('all')">📋 Xem tất cả</button>
+    </div>
+
+    <!-- Tab: Top 5 -->
+    <div class="tab-panel active" id="panel-top5" data-print-title="⭐ Top 5 vị trí phù hợp nhất">
+      <div class="job-list" id="topList"></div>
+      <div class="caution-list">
+        <div class="caution-list-title">⚠️ Vị trí cần cân nhắc / dễ căng thẳng</div>
+        <div class="job-list" id="cautionList"></div>
+      </div>
+    </div>
+
+    <!-- Tab: By category -->
+    <div class="tab-panel" id="panel-bycat" data-print-title="🗂️ Theo nhóm ngành">
+      <div id="categoryList"></div>
+    </div>
+
+    <!-- Tab: All -->
+    <div class="tab-panel" id="panel-all" data-print-title="📋 Tất cả vị trí (sắp xếp theo độ phù hợp)">
+      <div class="job-list" id="allList"></div>
+    </div>
+
+    <p class="disclaimer">
+      <strong>Lưu ý:</strong> Kết quả DISC chỉ phản ánh xu hướng hành vi tự nhiên, không phải năng lực hay giới hạn của bạn.
+      Nhiều người vẫn làm rất tốt ở những vị trí "không tự nhiên" với mình thông qua rèn luyện kỹ năng và kinh nghiệm —
+      chỉ là họ phải nỗ lực nhiều hơn so với người có DISC phù hợp sẵn. Hãy xem đây là gợi ý tham khảo,
+      kết hợp thêm với chuyên môn, sở thích và mục tiêu nghề nghiệp của chính bạn.
+    </p>
+  </section>
+
+</div>
+
+<div class="results">
+  <div class="results-inner">
+    <div class="scores">
+      <div class="score d" id="card-d">
+        <div class="score-letter">D</div>
+        <div class="score-value" id="score-d">0</div>
+        <div class="score-name">Dominance</div>
+      </div>
+      <div class="score i" id="card-i">
+        <div class="score-letter">I</div>
+        <div class="score-value" id="score-i">0</div>
+        <div class="score-name">Influence</div>
+      </div>
+      <div class="score s" id="card-s">
+        <div class="score-letter">S</div>
+        <div class="score-value" id="score-s">0</div>
+        <div class="score-name">Steadiness</div>
+      </div>
+      <div class="score c" id="card-c">
+        <div class="score-letter">C</div>
+        <div class="score-value" id="score-c">0</div>
+        <div class="score-name">Compliance</div>
+      </div>
+    </div>
+
+    <div class="summary">
+      <div class="progress">Đã chọn <strong id="selectedCount">0</strong> / 28 hàng</div>
+      <div class="dominant" id="dominant">&nbsp;</div>
+    </div>
+
+    <div class="actions no-print">
+      <button class="btn" onclick="resetForm()">Làm lại</button>
+      <button class="btn btn-primary" onclick="window.print()">In / Lưu PDF</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ----- Data: 28 rows × 4 columns from the original DISC sheet -----
+  const ROWS = [
+    ["Táo bạo", "Nhiệt tình", "Thỏa mãn", "Ngoại giao"],
+    ["Kiên quyết", "Có sức thuyết phục", "Bản chất tốt", "Cẩn trọng"],
+    ["Trực tính", "Thân thiện", "Điềm tĩnh", "Chính xác"],
+    ["Dứt khoát", "Ba hoa", "Theo tập quán", "Dè dặt"],
+    ["Liều lĩnh", "Thân mật, thoải mái", "Không cực đoan", "Sâu sắc"],
+    ["Sáng tạo", "Có tài thuyết phục", "Hòa nhã", "Nhún nhường"],
+    ["Chỉ huy", "Diễn cảm", "Dễ phản ứng lại", "Cẩn thận"],
+    ["Nóng vội", "Thanh lịch", "Khiêm tốn", "Tinh ý"],
+    ["Khăng khăng", "Có sức hấp dẫn mạnh", "Sẵn sàng đồng ý", "Khéo xử"],
+    ["Dũng cảm", "Truyền cảm hứng", "Dễ phục tùng", "Nhút nhát"],
+    ["Ý chí mạnh mẽ", "Tươi cười", "Sốt sắng", "Kín đáo"],
+    ["Độc lập", "Khuyến khích", "Tử tế", "Nhận thức được"],
+    ["Cạnh tranh", "Hân hoan", "Chu đáo", "Cách biệt riêng tư"],
+    ["Vững vàng", "Hay khôi hài", "Tử tế", "Hay quan trọng hóa"],
+    ["Ngoan cố", "Thu hút", "Sốt sắng", "Chín chắn"],
+    ["Trơ tráo", "Duyên dáng", "Biết nghe lời", "Hợp lý"],
+    ["Tự tin", "Thích kết bạn", "Có thể dự đoán", "Nói nhẹ nhàng"],
+    ["Hăm hở", "Rất linh hoạt", "Trung thành", "Kỹ lưỡng"],
+    ["Năng nổ", "Cởi mở", "Nhẫn nại", "Sợ hãi"],
+    ["Quyết đoán", "Tự tin", "Hay giúp đỡ", "Công bằng"],
+    ["Cố chấp", "Sôi nổi", "Hòa nhã", "Có kỷ luật"],
+    ["Mạnh mẽ", "Bốc đồng", "Thông cảm", "Hướng vào nội tâm"],
+    ["Cường tráng", "Giao thiệp giỏi", "Rộng lượng", "Tế nhị"],
+    ["Đòi hỏi", "Quyến rũ", "Ung dung", "Phục tùng mệnh lệnh"],
+    ["Thích tranh cãi", "Vô tư lự", "Nhân hậu", "Có hệ thống"],
+    ["Thẳng thắn", "Vui tính", "Thỏa mãn", "Nghiêm ngặt"],
+    ["Bồn chồn", "Lôi cuốn", "Sẵn sàng công tác", "Cẩn thận"],
+    ["Tiên phong", "Lạc quan", "Điềm đạm", "Tôn trọng"],
+  ];
+
+  const COLS = ["d", "i", "s", "c"];
+
+  const TYPE_DESC = {
+    d: {
+      title: "D – Người Thủ lĩnh (Dominance)",
+      points: [
+        "Quyết đoán, mạnh mẽ, thích thách thức và kết quả nhanh",
+        "Định hướng theo mục tiêu, dám chịu trách nhiệm và đưa ra quyết định",
+        "Cần lưu ý: có thể quá thẳng, ít kiên nhẫn với chi tiết và quy trình",
+      ],
+    },
+    i: {
+      title: "I – Người Ảnh hưởng (Influence)",
+      points: [
+        "Cởi mở, lạc quan, giỏi giao tiếp và truyền cảm hứng",
+        "Thích làm việc nhóm, tạo không khí tích cực, kết nối nhanh với người mới",
+        "Cần lưu ý: dễ mất tập trung, đôi khi nói nhiều hơn làm, ngại chi tiết",
+      ],
+    },
+    s: {
+      title: "S – Người Kiên định (Steadiness)",
+      points: [
+        "Điềm tĩnh, kiên nhẫn, biết lắng nghe và hỗ trợ người khác",
+        "Trung thành, đáng tin cậy, làm việc bền bỉ và có trách nhiệm",
+        "Cần lưu ý: ngại thay đổi đột ngột, đôi khi né tránh xung đột trực tiếp",
+      ],
+    },
+    c: {
+      title: "C – Người Tuân thủ (Compliance)",
+      points: [
+        "Cẩn trọng, chính xác, làm việc có hệ thống và quy trình rõ ràng",
+        "Coi trọng chất lượng, dữ liệu, tiêu chuẩn và sự đúng đắn",
+        "Cần lưu ý: có thể cầu toàn, chậm khi cần quyết định nhanh dưới áp lực",
+      ],
+    },
+  };
+
+  // ----- Categories: ordered list with icon and name -----
+  const CATEGORIES = [
+    { id: "mgmt",    icon: "👔", name: "Quản lý / Lãnh đạo" },
+    { id: "it",      icon: "💻", name: "CNTT / Kỹ thuật phần mềm" },
+    { id: "health",  icon: "🏥", name: "Y tế / Chăm sóc sức khỏe" },
+    { id: "edu",     icon: "🎓", name: "Giáo dục / Đào tạo" },
+    { id: "sales",   icon: "💼", name: "Kinh doanh / Marketing" },
+    { id: "service", icon: "🏪", name: "Dịch vụ / Khách hàng" },
+    { id: "creative",icon: "🎨", name: "Sáng tạo / Truyền thông" },
+    { id: "eng",     icon: "🏗️", name: "Kỹ thuật / Sản xuất" },
+    { id: "finance", icon: "💰", name: "Tài chính / Kế toán" },
+    { id: "legal",   icon: "⚖️", name: "Pháp lý / Hành chính" },
+    { id: "logistics", icon: "🚚", name: "Logistics / Vận hành" },
+    { id: "hr",      icon: "👥", name: "Nhân sự (HR)" },
+  ];
+
+  // ----- Job profiles -----
+  // profile: ideal DISC distribution (% summing ~100)
+  // categories: array — a job can appear in multiple categories
+  const JOBS = [
+    // ===== QUẢN LÝ / LÃNH ĐẠO =====
+    {
+      name: "Trưởng phòng / Giám đốc Điều hành",
+      profile: { d: 40, i: 25, s: 15, c: 20 },
+      categories: ["mgmt"],
+      why: "Quyết đoán, định hướng tầm nhìn, dám chịu trách nhiệm với kết quả lớn.",
+    },
+    {
+      name: "Quản lý Dự án (Project Manager)",
+      profile: { d: 30, i: 25, s: 20, c: 25 },
+      categories: ["mgmt", "it"],
+      why: "Điều phối nhiều bên, lên kế hoạch chi tiết, ra quyết định nhanh khi có rủi ro.",
+    },
+    {
+      name: "Quản lý Vận hành / Operations",
+      profile: { d: 30, i: 15, s: 30, c: 25 },
+      categories: ["mgmt", "logistics"],
+      why: "Điều phối hoạt động hằng ngày, vừa quyết đoán vừa duy trì sự ổn định nhịp việc.",
+    },
+    {
+      name: "Trưởng nhóm / Tổ trưởng (Team Leader)",
+      profile: { d: 28, i: 28, s: 25, c: 19 },
+      categories: ["mgmt"],
+      why: "Cân bằng giữa định hướng, gắn kết đội, hỗ trợ thành viên và đảm bảo tiến độ.",
+    },
+    {
+      name: "Quản đốc Xưởng / Sản xuất",
+      profile: { d: 35, i: 15, s: 25, c: 25 },
+      categories: ["mgmt", "eng"],
+      why: "Chỉ huy hiện trường, kỷ luật cao, đảm bảo an toàn và năng suất.",
+    },
+
+    // ===== CNTT / KỸ THUẬT PHẦN MỀM =====
+    {
+      name: "Trưởng nhóm Phát triển (Tech Lead / Dev Lead)",
+      profile: { d: 30, i: 15, s: 20, c: 35 },
+      categories: ["it", "mgmt"],
+      why: "Vừa quyết đoán dẫn dắt nhóm, vừa có tư duy logic sâu về kỹ thuật và chất lượng code.",
+    },
+    {
+      name: "Lập trình viên (Developer / Software Engineer)",
+      profile: { d: 10, i: 15, s: 30, c: 45 },
+      categories: ["it"],
+      why: "Đòi hỏi tập trung sâu, làm việc có hệ thống, kiên nhẫn xử lý lỗi và chi tiết.",
+    },
+    {
+      name: "IT Support / Helpdesk",
+      profile: { d: 10, i: 25, s: 40, c: 25 },
+      categories: ["it", "service"],
+      why: "Phục vụ người dùng kiên nhẫn, giao tiếp dễ chịu, xử lý sự cố theo quy trình lặp lại.",
+    },
+    {
+      name: "QA / Tester",
+      profile: { d: 10, i: 10, s: 30, c: 50 },
+      categories: ["it"],
+      why: "Tỉ mỉ, kiên nhẫn, làm việc có quy trình, chú ý từng chi tiết bất thường.",
+    },
+    {
+      name: "Phân tích Nghiệp vụ (Business Analyst)",
+      profile: { d: 15, i: 20, s: 25, c: 40 },
+      categories: ["it"],
+      why: "Tư duy hệ thống, lắng nghe yêu cầu nghiệp vụ, phân tích logic và viết tài liệu.",
+    },
+    {
+      name: "Quản trị Hệ thống / DevOps",
+      profile: { d: 15, i: 10, s: 30, c: 45 },
+      categories: ["it"],
+      why: "Tỉ mỉ với hạ tầng, kiên nhẫn xử lý sự cố hệ thống, làm việc theo quy trình rõ ràng.",
+    },
+
+    // ===== Y TẾ / CHĂM SÓC SỨC KHỎE =====
+    {
+      name: "Bác sĩ Lâm sàng",
+      profile: { d: 25, i: 15, s: 25, c: 35 },
+      categories: ["health"],
+      why: "Quyết đoán khi cấp cứu, cẩn trọng khi chẩn đoán, đồng cảm với bệnh nhân.",
+    },
+    {
+      name: "Điều dưỡng / Y tá",
+      profile: { d: 10, i: 20, s: 45, c: 25 },
+      categories: ["health", "service"],
+      why: "Kiên nhẫn chăm sóc bệnh nhân, ổn định trong áp lực, tuân thủ quy trình y tế.",
+    },
+    {
+      name: "Kỹ thuật viên Xét nghiệm / Cận lâm sàng",
+      profile: { d: 10, i: 10, s: 30, c: 50 },
+      categories: ["health", "it"],
+      why: "Chính xác cao với mẫu xét nghiệm, tuân thủ quy trình và tiêu chuẩn chất lượng.",
+    },
+    {
+      name: "Dược sĩ",
+      profile: { d: 12, i: 18, s: 30, c: 40 },
+      categories: ["health"],
+      why: "Cẩn trọng với liều lượng, tuân thủ quy định, tư vấn rõ ràng cho người dùng.",
+    },
+    {
+      name: "Tâm lý trị liệu / Tư vấn tâm lý",
+      profile: { d: 8, i: 25, s: 45, c: 22 },
+      categories: ["health", "service"],
+      why: "Lắng nghe sâu, không phán xét, đồng hành lâu dài cùng thân chủ.",
+    },
+
+    // ===== GIÁO DỤC / ĐÀO TẠO =====
+    {
+      name: "Giáo viên Mầm non / Tiểu học",
+      profile: { d: 10, i: 35, s: 40, c: 15 },
+      categories: ["edu"],
+      why: "Kiên nhẫn vô hạn với trẻ, vui vẻ tạo không khí, giữ kỷ luật mềm mại.",
+    },
+    {
+      name: "Giáo viên THCS / THPT",
+      profile: { d: 20, i: 30, s: 30, c: 20 },
+      categories: ["edu"],
+      why: "Cân bằng giữa truyền cảm hứng, quản lý lớp và truyền đạt kiến thức có hệ thống.",
+    },
+    {
+      name: "Giảng viên Đại học / Nghiên cứu viên",
+      profile: { d: 15, i: 20, s: 25, c: 40 },
+      categories: ["edu"],
+      why: "Tư duy phân tích sâu, làm việc với dữ liệu, viết và trình bày học thuật.",
+    },
+    {
+      name: "Huấn luyện viên Kỹ năng / Diễn giả",
+      profile: { d: 25, i: 45, s: 15, c: 15 },
+      categories: ["edu", "creative"],
+      why: "Năng lượng cao, truyền cảm hứng, dẫn dắt đám đông và tạo trải nghiệm học tập.",
+    },
+
+    // ===== KINH DOANH / MARKETING =====
+    {
+      name: "Sales / Kinh doanh / Phát triển Thị trường",
+      profile: { d: 35, i: 40, s: 15, c: 10 },
+      categories: ["sales"],
+      why: "Năng lượng cao, giao tiếp lôi cuốn, dám đề xuất, theo đuổi và chốt deal.",
+    },
+    {
+      name: "Marketing / Truyền thông Thương hiệu",
+      profile: { d: 20, i: 45, s: 15, c: 20 },
+      categories: ["sales", "creative"],
+      why: "Sáng tạo, lôi cuốn, hiểu tâm lý người dùng, kể chuyện và xây dựng hình ảnh.",
+    },
+    {
+      name: "Account Manager / Customer Success",
+      profile: { d: 15, i: 35, s: 35, c: 15 },
+      categories: ["sales", "service"],
+      why: "Xây dựng quan hệ lâu dài, lắng nghe và đồng hành cùng khách hàng qua nhiều năm.",
+    },
+    {
+      name: "Môi giới Bất động sản / Chứng khoán",
+      profile: { d: 35, i: 40, s: 15, c: 10 },
+      categories: ["sales", "finance"],
+      why: "Tự tin, năng động, giỏi thuyết phục và chấp nhận rủi ro cao.",
+    },
+
+    // ===== DỊCH VỤ / KHÁCH HÀNG =====
+    {
+      name: "Lễ tân / Tiếp tân",
+      profile: { d: 8, i: 35, s: 40, c: 17 },
+      categories: ["service"],
+      why: "Thân thiện, kiên nhẫn, tươi cười và xử lý tình huống nhẹ nhàng.",
+    },
+    {
+      name: "Hướng dẫn viên Du lịch",
+      profile: { d: 25, i: 45, s: 20, c: 10 },
+      categories: ["service", "creative"],
+      why: "Năng lượng cao, kể chuyện hay, dẫn dắt nhóm và xử lý linh hoạt.",
+    },
+    {
+      name: "Đầu bếp / Phục vụ Nhà hàng",
+      profile: { d: 25, i: 25, s: 25, c: 25 },
+      categories: ["service"],
+      why: "Áp lực thời gian cao, làm việc nhóm chặt, tuân thủ công thức và vệ sinh.",
+    },
+    {
+      name: "Tổ chức Sự kiện (Event Planner)",
+      profile: { d: 28, i: 35, s: 17, c: 20 },
+      categories: ["service", "creative", "sales"],
+      why: "Vừa sáng tạo vừa điều phối, giao tiếp nhiều bên, kiểm soát chi tiết kế hoạch.",
+    },
+
+    // ===== SÁNG TẠO / TRUYỀN THÔNG =====
+    {
+      name: "Thiết kế Đồ họa / UX-UI Designer",
+      profile: { d: 15, i: 30, s: 20, c: 35 },
+      categories: ["creative", "it"],
+      why: "Sáng tạo có nguyên tắc, tỉ mỉ với chi tiết visual, hiểu nhu cầu người dùng.",
+    },
+    {
+      name: "Kiến trúc sư / Thiết kế Nội thất",
+      profile: { d: 20, i: 25, s: 15, c: 40 },
+      categories: ["creative", "eng"],
+      why: "Sáng tạo có quy chuẩn kỹ thuật, cẩn trọng với bản vẽ, làm việc với khách hàng.",
+    },
+    {
+      name: "Nhà văn / Biên tập viên / Báo chí",
+      profile: { d: 15, i: 25, s: 25, c: 35 },
+      categories: ["creative"],
+      why: "Tư duy ngôn ngữ, tỉ mỉ với câu chữ, làm việc với deadline và biên tập kỹ.",
+    },
+
+    // ===== KỸ THUẬT / SẢN XUẤT =====
+    {
+      name: "Kỹ sư Xây dựng / Cơ khí / Điện",
+      profile: { d: 20, i: 15, s: 25, c: 40 },
+      categories: ["eng"],
+      why: "Tính toán chính xác, tuân thủ tiêu chuẩn an toàn, làm việc theo bản vẽ kỹ thuật.",
+    },
+    {
+      name: "Kỹ thuật viên Bảo trì / Vận hành Máy",
+      profile: { d: 15, i: 10, s: 35, c: 40 },
+      categories: ["eng"],
+      why: "Kiên nhẫn xử lý sự cố máy, làm việc lặp đi lặp lại, tuân thủ quy trình.",
+    },
+
+    // ===== TÀI CHÍNH / KẾ TOÁN =====
+    {
+      name: "Kế toán / Phân tích Tài chính",
+      profile: { d: 10, i: 10, s: 30, c: 50 },
+      categories: ["finance"],
+      why: "Chính xác cao, làm việc với số liệu, tuân thủ chuẩn mực và quy định.",
+    },
+    {
+      name: "Kiểm toán viên",
+      profile: { d: 15, i: 10, s: 25, c: 50 },
+      categories: ["finance", "legal"],
+      why: "Tỉ mỉ, độc lập, không nể nang khi phát hiện sai phạm, tuân thủ chuẩn nghề nghiệp.",
+    },
+    {
+      name: "Chuyên viên Ngân hàng / Tín dụng",
+      profile: { d: 18, i: 25, s: 27, c: 30 },
+      categories: ["finance", "sales"],
+      why: "Cân bằng giữa tư vấn khách hàng, đánh giá rủi ro và tuân thủ quy trình.",
+    },
+    {
+      name: "Chuyên viên Bảo hiểm",
+      profile: { d: 25, i: 35, s: 20, c: 20 },
+      categories: ["finance", "sales"],
+      why: "Tự tin, giỏi tư vấn lợi ích lâu dài, theo đuổi mục tiêu doanh số.",
+    },
+
+    // ===== PHÁP LÝ / HÀNH CHÍNH =====
+    {
+      name: "Luật sư / Tranh tụng",
+      profile: { d: 30, i: 20, s: 15, c: 35 },
+      categories: ["legal"],
+      why: "Lập luận chặt chẽ, tự tin tranh luận, tỉ mỉ với điều khoản và bằng chứng.",
+    },
+    {
+      name: "Pháp chế Doanh nghiệp / Công chứng",
+      profile: { d: 15, i: 15, s: 25, c: 45 },
+      categories: ["legal"],
+      why: "Cẩn trọng với hợp đồng, tuân thủ quy định, tư duy phòng ngừa rủi ro.",
+    },
+    {
+      name: "Cán bộ Hành chính / Văn phòng",
+      profile: { d: 12, i: 20, s: 38, c: 30 },
+      categories: ["legal", "hr"],
+      why: "Ổn định, có hệ thống, xử lý giấy tờ và phối hợp các phòng ban.",
+    },
+
+    // ===== LOGISTICS / VẬN HÀNH =====
+    {
+      name: "Chuyên viên Logistics / Mua hàng",
+      profile: { d: 22, i: 18, s: 25, c: 35 },
+      categories: ["logistics"],
+      why: "Đàm phán nhà cung cấp, theo dõi nhiều đơn hàng, kiểm soát chi tiết và thời gian.",
+    },
+    {
+      name: "Quản lý Kho / Chuỗi Cung ứng",
+      profile: { d: 25, i: 15, s: 30, c: 30 },
+      categories: ["logistics", "mgmt"],
+      why: "Điều phối nhân sự kho, kiểm kê chính xác, xử lý vấn đề tồn kho và giao hàng.",
+    },
+
+    // ===== NHÂN SỰ (HR) =====
+    {
+      name: "Nhân sự (HR) – Tuyển dụng / Đào tạo",
+      profile: { d: 20, i: 40, s: 25, c: 15 },
+      categories: ["hr", "edu"],
+      why: "Giao tiếp thuyết phục, đánh giá và kết nối con người, truyền cảm hứng học tập.",
+    },
+    {
+      name: "Nhân sự (HR) – C&B / Quan hệ Lao động",
+      profile: { d: 15, i: 25, s: 40, c: 20 },
+      categories: ["hr"],
+      why: "Lắng nghe, công bằng, xử lý quan hệ con người ổn định, giữ kỷ luật mềm.",
+    },
+    {
+      name: "Tư vấn / Coach / Cố vấn Cá nhân",
+      profile: { d: 15, i: 30, s: 35, c: 20 },
+      categories: ["hr", "service", "edu"],
+      why: "Lắng nghe sâu, đặt câu hỏi tốt, đồng hành với người được tư vấn qua quá trình thay đổi.",
+    },
+  ];
+
+  // ----- Render the test table -----
+  const tbody = document.getElementById("tbody");
+  ROWS.forEach((row, rowIdx) => {
+    const tr = document.createElement("tr");
+    row.forEach((word, colIdx) => {
+      const td = document.createElement("td");
+      td.className = "col-" + COLS[colIdx];
+
+      const label = document.createElement("label");
+      label.className = "cell";
+
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.name = "row-" + rowIdx;
+      input.value = COLS[colIdx];
+      input.dataset.row = rowIdx;
+      input.addEventListener("change", onChange);
+
+      const box = document.createElement("span");
+      box.className = "check-box";
+      box.textContent = "✓";
+
+      const text = document.createElement("span");
+      text.className = "cell-text";
+      if (colIdx === 0) {
+        const num = document.createElement("span");
+        num.className = "row-num";
+        num.textContent = (rowIdx + 1) + ".";
+        text.appendChild(num);
+      }
+      text.appendChild(document.createTextNode(word));
+
+      label.appendChild(input);
+      label.appendChild(box);
+      label.appendChild(text);
+      td.appendChild(label);
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+
+  function onChange(e) {
+    const rowIdx = e.target.dataset.row;
+    document.querySelectorAll('input[name="row-' + rowIdx + '"]').forEach((inp) => {
+      inp.closest(".cell").classList.toggle("selected", inp.checked);
+    });
+    recalc();
+    saveState();
+  }
+
+  // ----- Compute job match scores -----
+  function computeJobMatches(counts) {
+    const total = counts.d + counts.i + counts.s + counts.c;
+    if (total === 0) return [];
+    const userPct = {
+      d: (counts.d / total) * 100,
+      i: (counts.i / total) * 100,
+      s: (counts.s / total) * 100,
+      c: (counts.c / total) * 100,
+    };
+    return JOBS.map((job) => {
+      const diff =
+        Math.abs(userPct.d - job.profile.d) +
+        Math.abs(userPct.i - job.profile.i) +
+        Math.abs(userPct.s - job.profile.s) +
+        Math.abs(userPct.c - job.profile.c);
+      const match = Math.max(0, Math.round(100 - diff / 2));
+      return Object.assign({}, job, { match: match });
+    }).sort((a, b) => b.match - a.match);
+  }
+
+  function tierClass(match) {
+    if (match >= 85) return "tier-1";
+    if (match >= 70) return "tier-2";
+    if (match >= 55) return "tier-3";
+    return "";
+  }
+
+  function tierLabel(match) {
+    if (match >= 85) return "🌟 Rất phù hợp";
+    if (match >= 70) return "✓ Phù hợp";
+    if (match >= 55) return "○ Tạm phù hợp";
+    return "△ Ít phù hợp";
+  }
+
+  // ----- Render a job card. Variants: 'full' (with reason), 'compact' (no reason) -----
+  function renderJobItem(job, opts) {
+    opts = opts || {};
+    const cls = opts.caution ? "" : tierClass(job.match);
+    const compact = opts.compact ? " compact" : "";
+    return (
+      '<div class="job-item ' + cls + compact + '">' +
+        '<div class="job-item-row">' +
+          '<div class="job-name">' + escapeHtml(job.name) + '</div>' +
+          '<div class="job-match">' + job.match + '% — ' + tierLabel(job.match) + '</div>' +
+        '</div>' +
+        (opts.compact ? '' :
+          '<div class="job-why">' + escapeHtml(job.why) + '</div>') +
+        '<div class="job-bar"><div class="job-bar-fill" style="width:' + job.match + '%"></div></div>' +
+      '</div>'
+    );
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+
+  // ----- Tab switching -----
+  function switchTab(tabId) {
+    document.querySelectorAll(".tab").forEach((t) => {
+      t.classList.toggle("active", t.dataset.tab === tabId);
+    });
+    document.querySelectorAll(".tab-panel").forEach((p) => {
+      p.classList.toggle("active", p.id === "panel-" + tabId);
+    });
+  }
+  window.switchTab = switchTab;
+
+  // ----- Render all 3 views from a sorted matches array -----
+  function renderAllViews(matches) {
+    // ---- View 1: Top 5 + 2 cautions ----
+    const top5 = matches.slice(0, 5);
+    const cautions = matches.slice(-2).reverse();
+    document.getElementById("topList").innerHTML =
+      top5.map((j) => renderJobItem(j, { compact: false })).join('');
+    document.getElementById("cautionList").innerHTML =
+      cautions.map((j) => renderJobItem(j, { caution: true })).join('');
+
+    // ---- View 2: By category ----
+    // Iterate categories in the defined order; for each, find its top 3 jobs
+    const TOP_PER_CATEGORY = 3;
+    const catHtml = CATEGORIES.map((cat) => {
+      const inCat = matches.filter((j) => j.categories.indexOf(cat.id) >= 0);
+      if (inCat.length === 0) return '';
+      const shown = inCat.slice(0, TOP_PER_CATEGORY);
+      const remaining = inCat.length - shown.length;
+      return (
+        '<div class="cat-group">' +
+          '<div class="cat-header">' +
+            '<span class="cat-icon">' + cat.icon + '</span>' +
+            '<span class="cat-name">' + escapeHtml(cat.name) + '</span>' +
+            '<span class="cat-count">' + inCat.length + ' vị trí</span>' +
+          '</div>' +
+          '<div class="job-list">' +
+            shown.map((j) => renderJobItem(j, { compact: true })).join('') +
+          '</div>' +
+          (remaining > 0 ? '<div class="cat-more">+ ' + remaining + ' vị trí khác trong nhóm này</div>' : '') +
+        '</div>'
+      );
+    }).join('');
+    document.getElementById("categoryList").innerHTML = catHtml;
+
+    // ---- View 3: All jobs sorted by match% ----
+    document.getElementById("allList").innerHTML =
+      matches.map((j) => renderJobItem(j, { compact: true })).join('');
+  }
+
+  // ----- Recalculate scores and refresh everything -----
+  function recalc() {
+    const counts = { d: 0, i: 0, s: 0, c: 0 };
+    let selected = 0;
+    document.querySelectorAll('input[type="radio"]:checked').forEach((inp) => {
+      counts[inp.value]++;
+      selected++;
+    });
+
+    COLS.forEach((c) => {
+      document.getElementById("score-" + c).textContent = counts[c];
+    });
+    document.getElementById("selectedCount").textContent = selected;
+
+    const max = Math.max(counts.d, counts.i, counts.s, counts.c);
+    const winners = COLS.filter((c) => counts[c] === max && max > 0);
+
+    COLS.forEach((c) => {
+      document.getElementById("card-" + c)
+        .classList.toggle("is-top", winners.includes(c) && max > 0);
+    });
+
+    const dominantEl = document.getElementById("dominant");
+    const analysisEl = document.getElementById("analysis");
+    const previewTag = document.getElementById("previewTag");
+    const typeContent = document.getElementById("typeContent");
+
+    if (selected === 0) {
+      dominantEl.innerHTML = "&nbsp;";
+      analysisEl.classList.remove("show");
+      return;
+    }
+
+    const upper = winners.map((w) => w.toUpperCase()).join(" / ");
+    if (selected === 28) {
+      dominantEl.textContent = "Nhóm tính cách nổi bật: " + upper;
+      previewTag.style.display = "none";
+    } else {
+      dominantEl.textContent = "Đang dẫn đầu: " + upper +
+        " (còn " + (28 - selected) + " hàng chưa chọn)";
+      previewTag.style.display = "inline-block";
+    }
+
+    analysisEl.classList.add("show");
+
+    typeContent.innerHTML = winners.map((w) => {
+      const t = TYPE_DESC[w];
+      return (
+        '<div class="type-block">' +
+          '<h4>' + escapeHtml(t.title) + '</h4>' +
+          '<ul>' + t.points.map((p) => '<li>' + escapeHtml(p) + '</li>').join('') + '</ul>' +
+        '</div>'
+      );
+    }).join('');
+
+    const matches = computeJobMatches(counts);
+    renderAllViews(matches);
+  }
+
+  // ----- Reset everything -----
+  function resetForm() {
+    if (!confirm("Xoá toàn bộ lựa chọn và làm lại từ đầu?")) return;
+    document.querySelectorAll('input[type="radio"]').forEach((inp) => {
+      inp.checked = false;
+      inp.closest(".cell").classList.remove("selected");
+    });
+    recalc();
+    saveState();
+  }
+  window.resetForm = resetForm;
+
+  // ----- Persist progress in localStorage -----
+  const STORAGE_KEY = "disc_test_state_v2";
+
+  function saveState() {
+    const state = {
+      name: document.getElementById("name").value,
+      date: document.getElementById("date").value,
+      department: document.getElementById("department").value,
+      answers: {},
+    };
+    document.querySelectorAll('input[type="radio"]:checked').forEach((inp) => {
+      state.answers[inp.dataset.row] = inp.value;
+    });
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (_) {}
+  }
+
+  function loadState() {
+    let state = null;
+    try { state = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch (_) {}
+    if (!state) return;
+    if (state.name) document.getElementById("name").value = state.name;
+    if (state.date) document.getElementById("date").value = state.date;
+    if (state.department) document.getElementById("department").value = state.department;
+    if (state.answers) {
+      Object.entries(state.answers).forEach(([rowIdx, col]) => {
+        const inp = document.querySelector(
+          'input[name="row-' + rowIdx + '"][value="' + col + '"]'
+        );
+        if (inp) {
+          inp.checked = true;
+          inp.closest(".cell").classList.add("selected");
+        }
+      });
+    }
+  }
+
+  ["name", "date", "department"].forEach((id) => {
+    document.getElementById(id).addEventListener("input", saveState);
+  });
+
+  // ----- Init -----
+  loadState();
+  (function ensureDate() {
+    const el = document.getElementById("date");
+    if (!el.value) {
+      const d = new Date();
+      el.value = d.getFullYear() + "-" +
+        String(d.getMonth() + 1).padStart(2, "0") + "-" +
+        String(d.getDate()).padStart(2, "0");
+    }
+  })();
+  recalc();
+</script>
+
+</body>
+</html>
